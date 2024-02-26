@@ -1,0 +1,112 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(uuid())
+  name      String
+  cpf       String    @unique
+  email     String    @unique
+  dateBirth String    @map("date_birth")
+  password  String
+  phone     String
+  typeUser  Int       @map("type_user")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+  lists     List[]
+
+  @@map("users")
+}
+
+model List {
+  id          String    @id @default(uuid())
+  name        String
+  description String
+  budget      Decimal   @db.Decimal(9, 2)
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime? @updatedAt @map("updated_at")
+  authorId    String    @map("author_id")
+  author      User      @relation(fields: [authorId], references: [id])
+  itens       Item[]
+
+  @@map("lists")
+}
+
+model Item {
+  id              String          @id @default(uuid())
+  name            String
+  description     String
+  image           String
+  quantity        String
+  quantityMeasure String          @map("quantity_measure")
+  price           Decimal         @db.Decimal(9, 2)
+  barcode         String
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime?       @updatedAt @map("updated_at")
+  itemPromotions  ItemPromotion[]
+  listId          String          @map("list_id")
+  list            List            @relation(fields: [listId], references: [id])
+  categoryId      String          @map("category_id")
+  category        Category        @relation(fields: [categoryId], references: [id])
+
+  @@map("itens")
+}
+
+model Category {
+  id        String    @id @default(uuid())
+  name      String
+  itens     Item[]
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  @@map("categories")
+}
+
+model Store {
+  id         String      @id @default(uuid())
+  name       String
+  cep        String
+  address    String
+  createdAt  DateTime    @default(now()) @map("created_at")
+  updatedAt  DateTime?   @updatedAt @map("updated_at")
+  promotions Promotion[]
+
+  @@map("stories")
+}
+
+model Promotion {
+  id              String          @id @default(uuid())
+  name            String
+  discount        Decimal         @db.Decimal(9, 2)
+  discountPercent Int             @map("discount_percent")
+  dateInitial     DateTime        @map("date_intial")
+  dateEnd         DateTime        @map("date_end")
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime?       @updatedAt @map("updated_at")
+  itemPromotions  ItemPromotion[]
+  storeId         String          @map("store_id")
+  store           Store           @relation(fields: [storeId], references: [id])
+
+  @@map("promotions")
+}
+
+model ItemPromotion {
+  id          String    @id @default(uuid())
+  itemId      String    @map("item_id")
+  item        Item      @relation(fields: [itemId], references: [id])
+  promotionId String    @map("promotion_id")
+  promotion   Promotion @relation(fields: [promotionId], references: [id])
+
+  @@map("item_promotions")
+}
