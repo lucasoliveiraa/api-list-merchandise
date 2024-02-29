@@ -1,4 +1,4 @@
-import { IsDecimal, IsString } from 'class-validator'
+import { IsDecimal, IsNumber, IsString } from 'class-validator'
 
 export class CreateListDto {
   @IsString()
@@ -7,6 +7,6 @@ export class CreateListDto {
   @IsString()
   description: string
 
-  @IsDecimal()
-  budget: string
+  @IsNumber()
+  budget: number
 }
