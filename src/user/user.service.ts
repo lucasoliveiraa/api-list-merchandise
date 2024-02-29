@@ -9,9 +9,6 @@ export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
   async createUser(createUserDto: CreateUserDto, userType?: number) {
-    console.log(createUserDto)
-    console.log(userType)
-
     const { email, password } = createUserDto
 
     const userWithSameEmail = await this.prisma.user
@@ -22,7 +19,6 @@ export class UserService {
       })
       .catch(() => undefined)
 
-    console.log('=====>', userWithSameEmail)
     if (userWithSameEmail) {
       throw new ConflictException('Email registered in system')
     }
