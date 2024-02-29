@@ -2,7 +2,10 @@ import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { LoginDto } from './dto/login.dto'
 import { PrismaService } from 'src/prisma/prisma.service'
-import { compare } from 'bcrypt'
+import { validatePassword } from 'src/utils/password'
+import { ReturnLogin } from './dto/returnLogin.dto'
+import { ReturnUserDto } from 'src/user/dto/returnUser.dto'
+import { LoginPayload } from './dto/loginPayload.dto'
 
 @Injectable()
 export class AuthService {
@@ -11,9 +14,8 @@ export class AuthService {
     private readonly prisma: PrismaService,
   ) {}
 
-  async login(loginDto: LoginDto): Promise<{ access_token: string }> {
+  async login(loginDto: LoginDto): Promise<ReturnLogin> {
     const { email, password } = loginDto
-
     const user = await this.prisma.user
       .findUnique({
         where: {
@@ -22,20 +24,15 @@ export class AuthService {
       })
       .catch(() => undefined)
 
-    if (!user) {
-      throw new UnauthorizedException('User credentials do not match.')
+    const isMatch = await validatePassword(password, user?.password || '')
+
+    if (!user || !isMatch) {
+      throw new UnauthorizedException('Email or password invalid')
     }
-
-    const isPasswordValid = await compare(password, user.password)
-
-    if (!isPasswordValid) {
-      throw new UnauthorizedException('User credentials do not match.')
-    }
-
-    const accessToken = this.jwtService.sign({ sub: user.id })
 
     return {
-      access_token: accessToken,
+      accessToken: this.jwtService.sign({ ...new LoginPayload(user) }),
+      user: new ReturnUserDto(user),
     }
   }
 }
