@@ -1,6 +1,6 @@
-import { IsDecimal, IsString } from 'class-validator'
+import { IsDecimal, IsOptional, IsString } from 'class-validator'
 
-export class CreateProduct {
+export class CreateProductDto {
   @IsString()
   name: string
 
@@ -21,4 +21,11 @@ export class CreateProduct {
 
   @IsString()
   barcode: string
+
+  @IsString()
+  categoryId: string
+
+  @IsString()
+  @IsOptional()
+  listId: string
 }

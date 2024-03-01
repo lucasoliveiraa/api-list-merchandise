@@ -1,18 +1,19 @@
-import { Controller } from '@nestjs/common'
-import { PrismaService } from 'src/prisma/prisma.service'
-import { CreateProduct } from './dto/createProduct.dto'
+import { Body, Controller, Post } from '@nestjs/common'
+import { CreateProductDto } from './dto/createProduct.dto'
+import { Roles } from 'src/decorators/roles.decorator'
+import { UserType } from 'src/user/enum/user-type.enum'
+import { ProductService } from './product.service'
+import { ProductEntity } from './entities/product.entity'
 
+@Roles(UserType.Admin, UserType.Root, UserType.User)
 @Controller('product')
 export class ProductController {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly productService: ProductService) {}
 
-  async handle(createProduct: CreateProduct) {
-    await this.prisma.item.create({
-      data: {
-        ...createProduct,
-        listId: 'awdawd',
-        categoryId: 'awdawdaw',
-      },
-    })
+  @Roles(UserType.Admin, UserType.Root, UserType.User)
+  @Post()
+  async createProduct(@Body() createProduct: any): Promise<ProductEntity> {
+    console.log(createProduct)
+    return this.productService.createProduct(createProduct)
   }
 }
