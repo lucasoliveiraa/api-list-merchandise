@@ -4,8 +4,8 @@ import { LoginDto } from './dto/login.dto'
 import { PrismaService } from 'src/prisma/prisma.service'
 import { validatePassword } from 'src/utils/password'
 import { ReturnLogin } from './dto/returnLogin.dto'
-import { ReturnUserDto } from 'src/user/dto/returnUser.dto'
 import { LoginPayload } from './dto/loginPayload.dto'
+import { ReturnUserDto } from 'src/user/dto/return-user.dto'
 
 @Injectable()
 export class AuthService {
