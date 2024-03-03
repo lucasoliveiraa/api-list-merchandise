@@ -12,7 +12,9 @@ export class ProductController {
 
   @Roles(UserType.Admin, UserType.Root, UserType.User)
   @Post()
-  async createProduct(@Body() createProduct: any): Promise<ProductEntity> {
+  async createProduct(
+    @Body() createProduct: CreateProductDto,
+  ): Promise<ProductEntity> {
     console.log(createProduct)
     return this.productService.createProduct(createProduct)
   }

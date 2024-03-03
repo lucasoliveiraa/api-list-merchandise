@@ -1,4 +1,4 @@
-import { IsDecimal, IsOptional, IsString } from 'class-validator'
+import { IsDecimal, IsNumber, IsOptional, IsString } from 'class-validator'
 
 export class CreateProductDto {
   @IsString()
@@ -16,7 +16,7 @@ export class CreateProductDto {
   @IsString()
   quantityMeasure: string
 
-  @IsDecimal()
+  @IsNumber()
   price: number
 
   @IsString()
@@ -24,8 +24,4 @@ export class CreateProductDto {
 
   @IsString()
   categoryId: string
-
-  @IsString()
-  @IsOptional()
-  listId: string
 }

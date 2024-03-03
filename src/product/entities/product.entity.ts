@@ -12,6 +12,5 @@ export class ProductEntity implements Item {
   barcode: string
   createdAt: Date
   updatedAt: Date | null
-  listId: string
   categoryId: string
 }
