@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common'
+import { Body, Controller, Get, Param, Patch, Post, Put } from '@nestjs/common'
 import { UserService } from './user.service'
 import { ReturnUserDto } from './dto/return-user.dto'
 import { CreateUserDto } from './dto/create-user.dto'
@@ -7,6 +7,7 @@ import { UserType } from './enum/user-type.enum'
 import { UserEntity } from './entities/user.entity'
 import { UpdatePassword } from './dto/update-user.dto'
 import { UserId } from 'src/decorators/user-id.decorator'
+import { UpdateProfileUser } from './dto/update-profile-user.dto'
 
 @Controller('user')
 export class UserController {
@@ -45,5 +46,19 @@ export class UserController {
     @UserId() userId: string,
   ): Promise<UserEntity> {
     return this.userService.updatePasswordUser(updatePassword, userId)
+  }
+
+  @Roles(UserType.Admin, UserType.Root, UserType.User)
+  @Put('/update-profile')
+  async updateProfileUser(
+    @Body() updateProfileUser: UpdateProfileUser,
+    @UserId() userId: string,
+  ): Promise<ReturnUserDto> {
+    // return (
+    //   await this.userService.updateProfileUser(updateProfileUser, userId)
+    // ).((userEntity) => new ReturnUserDto(userEntity))
+    return new ReturnUserDto(
+      await this.userService.updateProfileUser(updateProfileUser, userId),
+    )
   }
 }

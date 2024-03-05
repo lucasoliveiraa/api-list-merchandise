@@ -10,6 +10,8 @@ import { createPasswordHashed, validatePassword } from 'src/utils/password'
 import { UserEntity } from './entities/user.entity'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdatePassword } from './dto/update-user.dto'
+import { UpdateProfileUser } from './dto/update-profile-user.dto'
+import { ReturnUserDto } from './dto/return-user.dto'
 
 @Injectable()
 export class UserService {
@@ -98,6 +100,25 @@ export class UserService {
       data: {
         ...user,
         password: passwordHash,
+      },
+    })
+  }
+
+  async updateProfileUser(
+    updateProfileUser: UpdateProfileUser,
+    userId: string,
+  ): Promise<UserEntity> {
+    const user = await this.findUserById(userId)
+
+    console.log('user', user)
+    console.log('updateProfileUser', updateProfileUser)
+    return this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        ...user,
+        ...updateProfileUser,
       },
     })
   }
