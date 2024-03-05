@@ -30,15 +30,15 @@ model User {
 }
 
 model List {
-  id          String    @id @default(uuid())
+  id          String     @id @default(uuid())
   name        String
   description String
-  budget      Decimal   @db.Decimal(9, 2)
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime? @updatedAt @map("updated_at")
-  authorId    String    @map("author_id")
-  author      User      @relation(fields: [authorId], references: [id])
-  itens       Item[]
+  budget      Decimal    @db.Decimal(9, 2)
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime?  @updatedAt @map("updated_at")
+  authorId    String     @map("author_id")
+  author      User       @relation(fields: [authorId], references: [id])
+  itemList    ItemList[]
 
   @@map("lists")
 }
@@ -55,17 +55,26 @@ model Item {
   createdAt       DateTime        @default(now()) @map("created_at")
   updatedAt       DateTime?       @updatedAt @map("updated_at")
   itemPromotions  ItemPromotion[]
-  listId          String          @map("list_id")
-  list            List            @relation(fields: [listId], references: [id])
   categoryId      String          @map("category_id")
   category        Category        @relation(fields: [categoryId], references: [id])
+  itemList        ItemList[]
 
   @@map("itens")
 }
 
+model ItemList {
+  id     String @id @default(uuid())
+  item   Item   @relation(fields: [itemId], references: [id])
+  itemId String @map("item_id")
+  list   List   @relation(fields: [listId], references: [id])
+  listId String @map("list_id")
+
+  @@map("itens_lists")
+}
+
 model Category {
   id        String    @id @default(uuid())
-  name      String
+  name      String    @unique
   itens     Item[]
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
