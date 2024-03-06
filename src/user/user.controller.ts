@@ -54,9 +54,6 @@ export class UserController {
     @Body() updateProfileUser: UpdateProfileUser,
     @UserId() userId: string,
   ): Promise<ReturnUserDto> {
-    // return (
-    //   await this.userService.updateProfileUser(updateProfileUser, userId)
-    // ).((userEntity) => new ReturnUserDto(userEntity))
     return new ReturnUserDto(
       await this.userService.updateProfileUser(updateProfileUser, userId),
     )
