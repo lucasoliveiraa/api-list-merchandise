@@ -1,5 +1,6 @@
 import { Item } from '@prisma/client'
 import { Decimal } from '@prisma/client/runtime/library'
+import { CategoryEntity } from 'src/category/entities/category.entity'
 
 export class ProductEntity implements Item {
   id: string
@@ -13,4 +14,5 @@ export class ProductEntity implements Item {
   createdAt: Date
   updatedAt: Date | null
   categoryId: string
+  category?: CategoryEntity
 }

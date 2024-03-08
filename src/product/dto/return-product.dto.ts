@@ -1,5 +1,6 @@
 import { Decimal } from '@prisma/client/runtime/library'
 import { ProductEntity } from '../entities/product.entity'
+import { ReturnCategory } from 'src/category/dto/return-category.dto'
 
 export class ReturnProduct {
   name: string
@@ -10,6 +11,7 @@ export class ReturnProduct {
   quantityMeasure: string
   barcode: string
   categoryId: string
+  category?: ReturnCategory
 
   constructor(productEntity: ProductEntity) {
     this.name = productEntity.name
@@ -20,5 +22,8 @@ export class ReturnProduct {
     this.quantityMeasure = productEntity.quantityMeasure
     this.barcode = productEntity.barcode
     this.categoryId = productEntity.categoryId
+    this.category = productEntity.category
+      ? new ReturnCategory(productEntity.category)
+      : undefined
   }
 }
