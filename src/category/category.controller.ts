@@ -8,7 +8,7 @@ import { ReturnCategory } from './dto/return-category.dto'
 import { UpdateCategory } from './dto/update-category.dto'
 
 @Controller('category')
-@Roles(UserType.Admin, UserType.Root, UserType.User)
+@Roles(UserType.Admin, UserType.Root)
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
@@ -19,6 +19,7 @@ export class CategoryController {
     return this.categoryService.createCategory(createCategory)
   }
 
+  @Roles(UserType.Admin, UserType.Root, UserType.User)
   @Get()
   async findAllCategories(): Promise<ReturnCategory[]> {
     return this.categoryService.findAllCategories()
@@ -39,10 +40,12 @@ export class CategoryController {
     )
   }
 
+  @Roles(UserType.Admin, UserType.Root, UserType.User)
   @Get(':categoryId')
   async findCategoryById(
     @Param('categoryId') categoryId: string,
   ): Promise<ReturnCategory> {
+    // return this.categoryService.findCategoryById(categoryId, true)
     return new ReturnCategory(
       await this.categoryService.findCategoryById(categoryId, true),
     )

@@ -1,6 +1,7 @@
 import { ReturnCategory } from './dto/return-category.dto'
 import {
   BadRequestException,
+  HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common'
@@ -13,19 +14,30 @@ import { UpdateCategory } from './dto/update-category.dto'
 export class CategoryService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createCategory(
-    createCategory: CreateCategory,
-  ): Promise<CategoryEntity> {
-    const { name } = createCategory
-    const categoryExists = await this.prisma.category
-      .findFirst({
+  async findCategoryByName(name: string): Promise<CategoryEntity> {
+    const category = await this.prisma.category
+      .findUnique({
         where: {
           name,
         },
       })
       .catch(() => undefined)
 
-    if (categoryExists) {
+    if (!category) {
+      throw new NotFoundException(`Category name ${name} not found`)
+    }
+
+    return category
+  }
+
+  async createCategory(
+    createCategory: CreateCategory,
+  ): Promise<CategoryEntity> {
+    const category = await this.findCategoryByName(createCategory.name).catch(
+      () => undefined,
+    )
+
+    if (category) {
       throw new BadRequestException(
         `Category name ${createCategory.name} exist`,
       )
@@ -66,18 +78,24 @@ export class CategoryService {
     if (!category) {
       throw new NotFoundException(`Category id: ${categoryId} not found`)
     }
-
+    console.log(category)
     return category
   }
 
-  async deleteCategory(categoryId: string): Promise<CategoryEntity> {
+  async deleteCategory(
+    categoryId: string,
+  ): Promise<{ message: string; statusCode: number }> {
     const category = await this.findCategoryById(categoryId, true)
 
     if (category && category.itens && category.itens.length > 0) {
       throw new BadRequestException('Category with relations.')
     }
 
-    return this.prisma.category.delete({ where: { id: categoryId } })
+    await this.prisma.category.delete({ where: { id: categoryId } })
+    return {
+      message: 'Categoria excluída com sucesso',
+      statusCode: HttpStatus.OK,
+    }
   }
 
   async editCategory(
