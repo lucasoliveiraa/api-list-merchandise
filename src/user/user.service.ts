@@ -20,14 +20,20 @@ export class UserService {
     createUserDto: CreateUserDto,
     userType?: number,
   ): Promise<UserEntity> {
-    const { email, password } = createUserDto
+    const { email, password, cpf } = createUserDto
 
     const userWithSameEmail = await this.findUserByEmail(email).catch(
       () => undefined,
     )
 
+    const userWithSameCpf = await this.findUserByCpf(cpf).catch(() => undefined)
+
     if (userWithSameEmail) {
       throw new ConflictException('Email registered in system')
+    }
+
+    if (userWithSameCpf) {
+      throw new ConflictException('CPF registered in system')
     }
 
     const passwordHashed = await createPasswordHashed(password)
@@ -75,6 +81,22 @@ export class UserService {
     return user
   }
 
+  async findUserByCpf(cpf: string): Promise<UserEntity> {
+    const user = await this.prisma.user
+      .findUnique({
+        where: {
+          cpf,
+        },
+      })
+      .catch(() => undefined)
+
+    if (!user) {
+      throw new NotFoundException(`CPF: ${cpf} not found`)
+    }
+
+    return user
+  }
+
   async updatePasswordUser(
     updatePassword: UpdatePassword,
     userId: string,
@@ -89,7 +111,7 @@ export class UserService {
     )
 
     if (!isMatch) {
-      throw new BadRequestException('Last password invalid')
+      throw new BadRequestException('Senha anterior inválida')
     }
 
     return this.prisma.user.update({
