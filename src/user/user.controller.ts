@@ -20,8 +20,8 @@ export class UserController {
   }
 
   @Post()
-  async createUser(@Body() createUser: CreateUserDto): Promise<UserEntity> {
-    return this.userService.createUser(createUser)
+  async createUser(@Body() createUser: CreateUserDto): Promise<ReturnUserDto> {
+    return new ReturnUserDto(await this.userService.createUser(createUser))
   }
 
   @Get('/all')
