@@ -1,0 +1,20 @@
+import { ItemList } from '@prisma/client'
+import { Decimal } from '@prisma/client/runtime/library'
+import { ListItemEntity } from 'src/list-item/entities/list.entity'
+import { ListEntity } from 'src/list/entities/list.entity'
+
+export class ReturnListDto {
+  name: string
+  description: string
+  budget: Decimal
+  authorId: string
+  itemList?: ItemList[]
+
+  constructor(listEntity: ListEntity) {
+    this.name = listEntity.name
+    this.description = listEntity.description
+    this.budget = new Decimal(listEntity.budget)
+    this.authorId = listEntity.authorId
+    this.itemList = listEntity.itemList
+  }
+}
