@@ -1,5 +1,7 @@
 import { List } from '@prisma/client'
 import { Decimal } from '@prisma/client/runtime/library'
+import { ListItemEntity } from 'src/list-item/entities/list.entity'
+import { UserEntity } from 'src/user/entities/user.entity'
 
 export class ListEntity implements List {
   id: string
@@ -9,4 +11,6 @@ export class ListEntity implements List {
   authorId: string
   createdAt: Date
   updatedAt: Date | null
+  author?: UserEntity
+  itemList?: ListItemEntity[]
 }
