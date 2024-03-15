@@ -4,6 +4,8 @@ import { CreateProductDto } from './dto/createProduct.dto'
 import { ProductEntity } from './entities/product.entity'
 import { CategoryService } from 'src/category/category.service'
 import { In } from 'typeorm'
+import { UpdateProduct } from './dto/update-product.dto'
+import { Prisma } from '@prisma/client'
 
 @Injectable()
 export class ProductService {
@@ -89,5 +91,23 @@ export class ProductService {
       message: 'Categoria excluída com sucesso',
       statusCode: HttpStatus.OK,
     }
+  }
+
+  async updateProduct(
+    updateProduct: UpdateProduct,
+    productId: string,
+  ): Promise<ProductEntity> {
+    await this.findProductById(productId)
+    const updateData: Prisma.ItemUpdateInput = {
+      ...updateProduct,
+    }
+    return this.prisma.item.update({
+      where: {
+        id: productId,
+      },
+      data: {
+        ...updateData,
+      },
+    })
   }
 }
