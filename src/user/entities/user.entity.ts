@@ -1,4 +1,5 @@
 import { User } from '@prisma/client'
+import { ListEntity } from 'src/list/entities/list.entity'
 
 export class UserEntity implements User {
   id: string
@@ -11,4 +12,5 @@ export class UserEntity implements User {
   typeUser: number
   createdAt: Date
   updatedAt: Date | null
+  lists?: ListEntity[]
 }

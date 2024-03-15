@@ -11,6 +11,8 @@ import { UserEntity } from './entities/user.entity'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdatePassword } from './dto/update-user.dto'
 import { UpdateProfileUser } from './dto/update-profile-user.dto'
+import { Prisma } from '@prisma/client'
+import { ReturnUserDto } from './dto/return-user.dto'
 
 @Injectable()
 export class UserService {
@@ -51,8 +53,34 @@ export class UserService {
     return this.prisma.user.findMany()
   }
 
+  async getUserByIdUsingRelations(
+    userId: string,
+    // isRelations?: boolean,
+  ): Promise<any> {
+    // const relations = isRelations
+    //   ? {
+    //       itens: true,
+    //     }
+    //   : undefined
+
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      include: {
+        lists: {
+          include: {
+            itemList: true,
+          },
+        },
+      },
+    })
+
+    return user
+  }
+
   async findUserById(userId: string): Promise<UserEntity | null> {
-    const user = this.prisma.user.findUnique({
+    const user = await this.prisma.user.findUnique({
       where: {
         id: userId,
       },
@@ -114,13 +142,16 @@ export class UserService {
       throw new BadRequestException('Senha anterior inválida')
     }
 
+    const updateData: Prisma.UserUpdateInput = {
+      password: passwordHash,
+    }
+
     return this.prisma.user.update({
       where: {
         id: userId,
       },
       data: {
-        ...user,
-        password: passwordHash,
+        ...updateData,
       },
     })
   }
@@ -129,15 +160,16 @@ export class UserService {
     updateProfileUser: UpdateProfileUser,
     userId: string,
   ): Promise<UserEntity> {
-    const user = await this.findUserById(userId)
-
+    await this.findUserById(userId)
+    const updateData: Prisma.UserUpdateInput = {
+      ...updateProfileUser,
+    }
     return this.prisma.user.update({
       where: {
         id: userId,
       },
       data: {
-        ...user,
-        ...updateProfileUser,
+        ...updateData,
       },
     })
   }
