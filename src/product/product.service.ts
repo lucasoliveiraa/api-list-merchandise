@@ -6,11 +6,13 @@ import { CategoryService } from 'src/category/category.service'
 import { In } from 'typeorm'
 import { UpdateProduct } from './dto/update-product.dto'
 import { Prisma } from '@prisma/client'
+import { ProductRepository } from './repositories/product.repository'
 
 @Injectable()
 export class ProductService {
   constructor(
     private readonly prisma: PrismaService,
+    private readonly productRepository: ProductRepository,
     private readonly categoryService: CategoryService,
   ) {}
 
@@ -50,11 +52,7 @@ export class ProductService {
 
   async createProduct(createProduct: CreateProductDto): Promise<ProductEntity> {
     await this.categoryService.findCategoryById(createProduct.categoryId)
-    return this.prisma.item.create({
-      data: {
-        ...createProduct,
-      },
-    })
+    return this.productRepository.create(createProduct)
   }
 
   async findProductById(
