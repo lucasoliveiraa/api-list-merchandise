@@ -6,11 +6,12 @@ export class UserEntity implements User {
   name: string
   password: string
   email: string
-  dateBirth: string
-  phone: string
-  cpf: string
+  dateBirth: string | null
+  phone: string | null
+  cpf: string | null
   typeUser: number
   createdAt: Date
   updatedAt: Date | null
   lists?: ListEntity[]
+  // subscriptions?: SubscriptionEntity
 }

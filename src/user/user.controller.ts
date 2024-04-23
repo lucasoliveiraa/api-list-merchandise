@@ -5,7 +5,7 @@ import { CreateUserDto } from './dto/create-user.dto'
 import { Roles } from 'src/decorators/roles.decorator'
 import { UserType } from './enum/user-type.enum'
 import { UserEntity } from './entities/user.entity'
-import { UpdatePassword } from './dto/update-user.dto'
+import { UpdatePassword } from './dto/update-password.dto'
 import { UserId } from 'src/decorators/user-id.decorator'
 import { UpdateProfileUser } from './dto/update-profile-user.dto'
 
@@ -24,6 +24,7 @@ export class UserController {
     return new ReturnUserDto(await this.userService.createUser(createUser))
   }
 
+  @Roles(UserType.Admin, UserType.Root)
   @Get('/all')
   async getAllUsers(): Promise<ReturnUserDto[]> {
     return (await this.userService.getAllUser()).map(
@@ -34,9 +35,7 @@ export class UserController {
   @Roles(UserType.Admin, UserType.Root, UserType.User)
   @Get('/:userId')
   async getUserById(@Param('userId') userId: string): Promise<ReturnUserDto> {
-    return new ReturnUserDto(
-      await this.userService.getUserByIdUsingRelations(userId),
-    )
+    return new ReturnUserDto(await this.userService.findUserById(userId))
   }
 
   @Roles(UserType.Admin, UserType.Root, UserType.User)
