@@ -8,7 +8,7 @@ export class ListEntity implements List {
   name: string
   description: string
   budget: Decimal
-  authorId: string
+  userId: string
   createdAt: Date
   updatedAt: Date | null
   author?: UserEntity

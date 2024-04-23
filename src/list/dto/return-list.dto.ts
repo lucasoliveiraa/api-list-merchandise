@@ -7,14 +7,14 @@ export class ReturnListDto {
   name: string
   description: string
   budget: Decimal
-  authorId: string
+  userId: string
   itemList?: ItemList[]
 
   constructor(listEntity: ListEntity) {
     this.name = listEntity.name
     this.description = listEntity.description
     this.budget = new Decimal(listEntity.budget)
-    this.authorId = listEntity.authorId
+    this.userId = listEntity.userId
     this.itemList = listEntity.itemList
   }
 }
