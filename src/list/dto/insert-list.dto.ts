@@ -1,9 +1,6 @@
-import { IsNumber } from 'class-validator'
+import { IsNumber, IsOptional, IsString } from 'class-validator'
 
 export class InsertList {
-  @IsNumber()
-  productId: number
-
-  @IsNumber()
-  amount: number
+  @IsString()
+  productId: string
 }
