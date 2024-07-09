@@ -4,11 +4,11 @@ import { ReturnCategory } from 'src/category/dto/return-category.dto'
 
 export class ReturnProduct {
   name: string
-  price: Decimal
+  price: Decimal | null
   description: string
   image: string
-  quantity: string
-  quantityMeasure: string
+  quantity: number | null
+  quantityMeasure: string | null
   barcode: string
   categoryId: string
   category?: ReturnCategory

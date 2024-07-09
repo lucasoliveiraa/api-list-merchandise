@@ -1,17 +1,13 @@
 import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common'
-import { PrismaService } from 'src/prisma/prisma.service'
-import { CreateProductDto } from './dto/createProduct.dto'
-import { ProductEntity } from './entities/product.entity'
 import { CategoryService } from 'src/category/category.service'
-import { In } from 'typeorm'
-import { UpdateProduct } from './dto/update-product.dto'
-import { Prisma } from '@prisma/client'
 import { ProductRepository } from './repositories/product.repository'
+import { ProductEntity } from './entities/product.entity'
+import { CreateProductDto } from './dto/createProduct.dto'
+import { UpdateProduct } from './dto/update-product.dto'
 
 @Injectable()
 export class ProductService {
   constructor(
-    private readonly prisma: PrismaService,
     private readonly productRepository: ProductRepository,
     private readonly categoryService: CategoryService,
   ) {}
@@ -20,27 +16,10 @@ export class ProductService {
     productId?: number[],
     isFindRelations?: boolean,
   ): Promise<ProductEntity[]> {
-    let findOptions = {}
-
-    if (productId && productId.length > 0) {
-      findOptions = {
-        where: {
-          id: In(productId),
-        },
-      }
-    }
-
-    if (isFindRelations) {
-      findOptions = {
-        ...findOptions,
-        include: {
-          category: true,
-        },
-      }
-    }
-
-    console.log('testeee', findOptions)
-    const products = await this.prisma.item.findMany(findOptions)
+    const products = await this.productRepository.findAll(
+      productId,
+      isFindRelations,
+    )
     console.log('====> ', products)
 
     if (!products || products.length === 0) {
@@ -59,18 +38,12 @@ export class ProductService {
     productId: string,
     isRelations?: boolean,
   ): Promise<ProductEntity> {
-    const relations = isRelations
-      ? {
-          category: true,
-        }
-      : undefined
-
-    const product = await this.prisma.item.findUnique({
-      where: {
-        id: productId,
-      },
-      include: relations,
-    })
+    console.log('awdawdawdawdaw')
+    console.log('findProductById', productId, isRelations)
+    const product = await this.productRepository.findProductById(
+      productId,
+      isRelations,
+    )
 
     if (!product) {
       throw new NotFoundException(`Product id: ${productId} not found`)
@@ -84,9 +57,9 @@ export class ProductService {
   ): Promise<{ message: string; statusCode: number }> {
     await this.findProductById(productId)
 
-    await this.prisma.item.delete({ where: { id: productId } })
+    await this.productRepository.delete(productId)
     return {
-      message: 'Categoria excluída com sucesso',
+      message: 'Produto excluído com sucesso',
       statusCode: HttpStatus.OK,
     }
   }
@@ -96,16 +69,7 @@ export class ProductService {
     productId: string,
   ): Promise<ProductEntity> {
     await this.findProductById(productId)
-    const updateData: Prisma.ItemUpdateInput = {
-      ...updateProduct,
-    }
-    return this.prisma.item.update({
-      where: {
-        id: productId,
-      },
-      data: {
-        ...updateData,
-      },
-    })
+
+    return this.productRepository.update(updateProduct, productId)
   }
 }

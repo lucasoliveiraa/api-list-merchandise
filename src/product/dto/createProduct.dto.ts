@@ -1,4 +1,5 @@
-import { IsNumber, IsString } from 'class-validator'
+import { IsNumber, IsOptional, IsString } from 'class-validator'
+import { QuantityMeasure } from '@utils/enum'
 
 export class CreateProductDto {
   @IsString()
@@ -11,13 +12,16 @@ export class CreateProductDto {
   image: string
 
   @IsString()
-  quantity: string
+  @IsOptional()
+  quantity?: number
 
   @IsString()
-  quantityMeasure: string
+  @IsOptional()
+  quantityMeasure?: QuantityMeasure
 
   @IsNumber()
-  price: number
+  @IsOptional()
+  price?: number
 
   @IsString()
   barcode: string
