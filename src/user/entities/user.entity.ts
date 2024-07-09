@@ -12,6 +12,6 @@ export class UserEntity implements User {
   typeUser: number
   createdAt: Date
   updatedAt: Date | null
-  lists?: ListEntity[]
+  lists?: ListEntity[] | null
   // subscriptions?: SubscriptionEntity
 }

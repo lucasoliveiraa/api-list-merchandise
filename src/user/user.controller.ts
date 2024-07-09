@@ -1,14 +1,17 @@
 import { Body, Controller, Get, Param, Patch, Post, Put } from '@nestjs/common'
 import { UserService } from './user.service'
+import { Roles } from '@decorators/roles.decorator'
+import { UserId } from '@decorators/user-id.decorator'
+import { UserEntity } from './entities/user.entity'
 import { ReturnUserDto } from './dto/return-user.dto'
 import { CreateUserDto } from './dto/create-user.dto'
-import { Roles } from 'src/decorators/roles.decorator'
-import { UserType } from './enum/user-type.enum'
-import { UserEntity } from './entities/user.entity'
 import { UpdatePassword } from './dto/update-password.dto'
-import { UserId } from 'src/decorators/user-id.decorator'
 import { UpdateProfileUser } from './dto/update-profile-user.dto'
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
+import { UserType } from '@utils/enum'
 
+@ApiTags('User')
+@ApiBearerAuth('access-token')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -55,6 +58,18 @@ export class UserController {
   ): Promise<ReturnUserDto> {
     return new ReturnUserDto(
       await this.userService.updateProfileUser(updateProfileUser, userId),
+    )
+  }
+
+  @Roles(UserType.Admin, UserType.Root, UserType.User)
+  @Get('/month/:month/year/:year')
+  async getUserByShoppingList(
+    @UserId() userId: string,
+    @Param('month') month: number,
+    @Param('year') year: number,
+  ): Promise<ReturnUserDto> {
+    return new ReturnUserDto(
+      await this.userService.findUserByShoppingList(userId, month, year),
     )
   }
 }

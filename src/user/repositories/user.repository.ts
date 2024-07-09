@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
-import { PrismaService } from 'src/prisma/prisma.service'
 import { UserEntity } from '../entities/user.entity'
 import { CreateUserDto } from '../dto/create-user.dto'
 import { UpdateProfileUser } from '../dto/update-profile-user.dto'
-import { UserType } from '../enum/user-type.enum'
+import { UserType } from '@utils/enum'
+import { PrismaService } from '@prisma/prisma.service'
 
 @Injectable()
 export class UserRepository {
@@ -28,30 +28,33 @@ export class UserRepository {
     return this.prisma.user.findMany()
   }
 
-  async getUserByIdUsingRelations(
-    userId: string,
-    // isRelations?: boolean,
-  ): Promise<any> {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        id: userId,
-      },
-      include: {
-        lists: {
-          include: {
-            itemList: true,
-          },
-        },
-      },
-    })
+  // async getUserByIdUsingRelations(
+  //   userId: string,
+  //   // isRelations?: boolean,
+  // ): Promise<any> {
+  //   const user = await this.prisma.user.findUnique({
+  //     where: {
+  //       id: userId,
+  //     },
+  //     include: {
+  //       lists: {
+  //         include: {
+  //           productList: true,
+  //         },
+  //       },
+  //     },
+  //   })
 
-    return user
-  }
+  //   return user
+  // }
 
   async findUserById(userId: string): Promise<UserEntity | null> {
     return this.prisma.user.findUnique({
       where: {
         id: userId,
+      },
+      include: {
+        lists: true,
       },
     })
   }
@@ -105,5 +108,37 @@ export class UserRepository {
         ...updateData,
       },
     })
+  }
+
+  async findUserByShoppingList(
+    userId: string,
+    month: number,
+    year: number,
+  ): Promise<any> {
+    const startDate = new Date(year, month - 1, 1)
+    const endDate = new Date(year, month, 0)
+
+    console.log('====> STAR', startDate, endDate)
+
+    return await this.prisma.shoppingList.findMany({
+      where: {
+        userId,
+        month,
+        year,
+      },
+      include: {
+        lists: true, // Inclui as listas associadas a este shopping list
+      },
+    })
+
+    // return this.prisma.shoppingList.findMany({
+    //   where: {
+    //     userId,
+    //     createdAt: {
+    //       gte: startDate,
+    //       lte: endDate,
+    //     },
+    //   },
+    // })
   }
 }

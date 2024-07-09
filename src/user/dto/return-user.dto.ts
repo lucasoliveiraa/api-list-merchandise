@@ -1,6 +1,6 @@
 import { ListEntity } from 'src/list/entities/list.entity'
 import { UserEntity } from '../entities/user.entity'
-import { ReturnListDto } from 'src/list/dto/return-list.dto'
+import { ReturnList } from 'src/list/dto/return-list.dto'
 
 export class ReturnUserDto {
   name: string
@@ -9,7 +9,7 @@ export class ReturnUserDto {
   dateBirth: string | null
   phone: string | null
   typeUser: number
-  lists?: ListEntity[]
+  lists?: ReturnList[]
 
   constructor(userEntity: UserEntity) {
     this.name = userEntity.name
@@ -18,6 +18,9 @@ export class ReturnUserDto {
     this.dateBirth = userEntity.dateBirth
     this.phone = userEntity.phone
     this.typeUser = userEntity.typeUser
+    this.lists = userEntity.lists
+      ? userEntity.lists.map((listUsers) => new ReturnList(listUsers))
+      : undefined
     // this.lists = userEntity.lists
     //   ? userEntity.lists.map((list) => ({
     //       id: list.id,
@@ -29,8 +32,8 @@ export class ReturnUserDto {
     //       updatedAt: list.updatedAt,
     //     }))
     //   : undefined
-    this.lists = userEntity.lists
-    //   ? userEntity.lists?.map((listUsers) => new ReturnListDto(listUsers))
+    // this.lists = userEntity.lists
+    //   ? userEntity.lists.map((listUsers) => new ReturnList(listUsers))
     //   : undefined
   }
 }

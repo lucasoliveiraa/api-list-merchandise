@@ -9,7 +9,7 @@ import { UserEntity } from './entities/user.entity'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdatePassword } from './dto/update-password.dto'
 import { UpdateProfileUser } from './dto/update-profile-user.dto'
-import { createPasswordHashed, validatePassword } from 'src/utils/password'
+import { createPasswordHashed, validatePassword } from '@utils/password'
 
 @Injectable()
 export class UserService {
@@ -42,17 +42,17 @@ export class UserService {
     return this.userRepostiry.findAll()
   }
 
-  async getUserByIdUsingRelations(
-    userId: string,
-    // isRelations?: boolean,
-  ): Promise<any> {
-    // const relations = isRelations
-    //   ? {
-    //       itens: true,
-    //     }
-    //   : undefined
-    return this.userRepostiry.getUserByIdUsingRelations(userId)
-  }
+  // async getUserByIdUsingRelations(
+  //   userId: string,
+  //   // isRelations?: boolean,
+  // ): Promise<any> {
+  //   // const relations = isRelations
+  //   //   ? {
+  //   //       itens: true,
+  //   //     }
+  //   //   : undefined
+  //   return this.userRepostiry.getUserByIdUsingRelations(userId)
+  // }
 
   async findUserById(userId: string): Promise<UserEntity> {
     const user = await this.userRepostiry.findUserById(userId)
@@ -110,5 +110,27 @@ export class UserService {
   ): Promise<UserEntity> {
     await this.findUserById(userId)
     return this.userRepostiry.updateProfileUser(userId, updateProfileUser)
+  }
+
+  async findUserByShoppingList(
+    userId: string,
+    month: number,
+    year: number,
+  ): Promise<UserEntity> {
+    console.log('======', userId, month, year)
+    const user = await this.userRepostiry.findUserByShoppingList(
+      userId,
+      month,
+      year,
+    )
+
+    console.log('=====> USER MONTH', user)
+    console.log('=====> USER MONTH', user.lists)
+
+    if (!user) {
+      throw new NotFoundException(`UserId: ${userId} not found`)
+    }
+
+    return user
   }
 }
