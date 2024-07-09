@@ -1,12 +1,14 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common'
-import { CreateProductDto } from './dto/createProduct.dto'
-import { Roles } from 'src/decorators/roles.decorator'
-import { UserType } from 'src/user/enum/user-type.enum'
+import { Roles } from '@decorators/roles.decorator'
 import { ProductService } from './product.service'
 import { ProductEntity } from './entities/product.entity'
+import { CreateProductDto } from './dto/createProduct.dto'
 import { ReturnProduct } from './dto/return-product.dto'
 import { UpdateProduct } from './dto/update-product.dto'
+import { ApiTags } from '@nestjs/swagger'
+import { UserType } from '@utils/enum'
 
+@ApiTags('Product')
 @Roles(UserType.Admin, UserType.Root, UserType.User)
 @Controller('product')
 export class ProductController {

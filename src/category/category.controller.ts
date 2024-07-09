@@ -1,12 +1,14 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common'
-import { Roles } from 'src/decorators/roles.decorator'
-import { UserType } from 'src/user/enum/user-type.enum'
+import { Roles } from '@decorators/roles.decorator'
 import { CategoryService } from './category.service'
 import { CreateCategory } from './dto/create-category.dto'
 import { CategoryEntity } from './entities/category.entity'
 import { ReturnCategory } from './dto/return-category.dto'
 import { UpdateCategory } from './dto/update-category.dto'
+import { ApiTags } from '@nestjs/swagger'
+import { UserType } from '@utils/enum'
 
+@ApiTags('Category')
 @Controller('category')
 @Roles(UserType.Admin, UserType.Root)
 export class CategoryController {

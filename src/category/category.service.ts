@@ -5,7 +5,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common'
-import { PrismaService } from 'src/prisma/prisma.service'
+import { PrismaService } from '@prisma/prisma.service'
 import { CreateCategory } from './dto/create-category.dto'
 import { CategoryEntity } from './entities/category.entity'
 import { UpdateCategory } from './dto/update-category.dto'
@@ -64,7 +64,7 @@ export class CategoryService {
   ): Promise<CategoryEntity> {
     const relations = isRelations
       ? {
-          itens: true,
+          products: true,
         }
       : undefined
 
@@ -87,7 +87,7 @@ export class CategoryService {
   ): Promise<{ message: string; statusCode: number }> {
     const category = await this.findCategoryById(categoryId, true)
 
-    if (category && category.itens && category.itens.length > 0) {
+    if (category && category.products && category.products.length > 0) {
       throw new BadRequestException('Category with relations.')
     }
 

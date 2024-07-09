@@ -10,6 +10,14 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
+    "paths": {
+      "@auth/*": ["src/auth/*"],
+      "@decorators/*": ["src/decorators/*"],
+      "@guards/*": ["src/guards/*"],
+      "@utils/*": ["src/utils/*"],
+      "@prisma/*": ["src/prisma/*"],
+      "@/*": ["src/*"]
+    },
     "incremental": true,
     "skipLibCheck": true,
     // Conflito no entity quando deixa os dois true
