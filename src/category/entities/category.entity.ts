@@ -6,5 +6,5 @@ export class CategoryEntity implements Category {
   name: string
   createdAt: Date
   updatedAt: Date | null
-  itens?: ProductEntity[]
+  products?: ProductEntity[]
 }

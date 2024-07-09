@@ -3,12 +3,12 @@ import { CategoryEntity } from '../entities/category.entity'
 
 export class ReturnCategory {
   name: string
-  itens?: ReturnProduct[]
+  products?: ReturnProduct[]
 
   constructor(categoryEntity: CategoryEntity) {
     this.name = categoryEntity.name
-    this.itens = categoryEntity.itens
-      ? categoryEntity.itens.map((item) => new ReturnProduct(item))
+    this.products = categoryEntity.products
+      ? categoryEntity.products.map((product) => new ReturnProduct(product))
       : undefined
   }
 }
