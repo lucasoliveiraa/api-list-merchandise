@@ -109,36 +109,4 @@ export class UserRepository {
       },
     })
   }
-
-  async findUserByShoppingList(
-    userId: string,
-    month: number,
-    year: number,
-  ): Promise<any> {
-    const startDate = new Date(year, month - 1, 1)
-    const endDate = new Date(year, month, 0)
-
-    console.log('====> STAR', startDate, endDate)
-
-    return await this.prisma.shoppingList.findMany({
-      where: {
-        userId,
-        month,
-        year,
-      },
-      include: {
-        lists: true, // Inclui as listas associadas a este shopping list
-      },
-    })
-
-    // return this.prisma.shoppingList.findMany({
-    //   where: {
-    //     userId,
-    //     createdAt: {
-    //       gte: startDate,
-    //       lte: endDate,
-    //     },
-    //   },
-    // })
-  }
 }
