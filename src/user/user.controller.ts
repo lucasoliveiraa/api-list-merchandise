@@ -9,6 +9,8 @@ import { UpdatePassword } from './dto/update-password.dto'
 import { UpdateProfileUser } from './dto/update-profile-user.dto'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { UserType } from '@utils/enum'
+import { ReturnUserAdminDto } from './dto/return-user-admin.dto'
+import { ReturnListShopping } from '@src/list-shopping/dto/return-list-shopping.dto'
 
 @ApiTags('User')
 @ApiBearerAuth('access-token')
@@ -29,15 +31,23 @@ export class UserController {
 
   @Roles(UserType.Admin, UserType.Root)
   @Get('/all')
-  async getAllUsers(): Promise<ReturnUserDto[]> {
+  async getAllUsers(): Promise<ReturnUserAdminDto[]> {
     return (await this.userService.getAllUser()).map(
-      (userEntity) => new ReturnUserDto(userEntity),
+      (userEntity) => new ReturnUserAdminDto(userEntity),
     )
   }
 
-  @Roles(UserType.Admin, UserType.Root, UserType.User)
+  @Roles(UserType.Admin, UserType.Root)
   @Get('/:userId')
-  async getUserById(@Param('userId') userId: string): Promise<ReturnUserDto> {
+  async getUserByIdAdmin(
+    @Param('userId') userId: string,
+  ): Promise<ReturnUserAdminDto> {
+    return new ReturnUserAdminDto(await this.userService.findUserById(userId))
+  }
+
+  @Roles(UserType.Admin, UserType.Root, UserType.User)
+  @Get()
+  async getUserById(@UserId() userId: string): Promise<ReturnUserDto> {
     return new ReturnUserDto(await this.userService.findUserById(userId))
   }
 
@@ -67,8 +77,8 @@ export class UserController {
     @UserId() userId: string,
     @Param('month') month: number,
     @Param('year') year: number,
-  ): Promise<ReturnUserDto> {
-    return new ReturnUserDto(
+  ): Promise<ReturnListShopping> {
+    return new ReturnListShopping(
       await this.userService.findUserByShoppingList(userId, month, year),
     )
   }

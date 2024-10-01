@@ -10,10 +10,15 @@ import { CreateUserDto } from './dto/create-user.dto'
 import { UpdatePassword } from './dto/update-password.dto'
 import { UpdateProfileUser } from './dto/update-profile-user.dto'
 import { createPasswordHashed, validatePassword } from '@utils/password'
+import { ListShoppingEntity } from '@src/list-shopping/entities/list-shopping.entity'
+import { ListShoppingService } from '@src/list-shopping/list-shopping.service'
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepostiry: UserRepository) {}
+  constructor(
+    private readonly userRepostiry: UserRepository,
+    private readonly listShoppingService: ListShoppingService,
+  ) {}
 
   async createUser(
     createUserDto: CreateUserDto,
@@ -116,21 +121,13 @@ export class UserService {
     userId: string,
     month: number,
     year: number,
-  ): Promise<UserEntity> {
-    console.log('======', userId, month, year)
-    const user = await this.userRepostiry.findUserByShoppingList(
+  ): Promise<ListShoppingEntity> {
+    const listByUser = await this.listShoppingService.findUserByShoppingList(
       userId,
       month,
       year,
     )
 
-    console.log('=====> USER MONTH', user)
-    console.log('=====> USER MONTH', user.lists)
-
-    if (!user) {
-      throw new NotFoundException(`UserId: ${userId} not found`)
-    }
-
-    return user
+    return listByUser
   }
 }
