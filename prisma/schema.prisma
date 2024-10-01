@@ -13,69 +13,125 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum QuantityMeasure {
+  KG
+  G
+  UNIDADE
+  LITRO
+}
+
 model User {
-  id        String    @id @default(uuid())
-  name      String
-  cpf       String    @unique
-  email     String    @unique
-  dateBirth String    @map("date_birth")
-  password  String
-  phone     String
-  typeUser  Int       @map("type_user")
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime? @updatedAt @map("updated_at")
-  lists     List[]
+  id           String         @id @default(uuid())
+  name         String
+  cpf          String?        @unique
+  email        String         @unique
+  dateBirth    String?        @map("date_birth")
+  password     String
+  phone        String?
+  typeUser     Int            @map("type_user")
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime?      @updatedAt @map("updated_at")
+  lists        List[]
+  subscription Subscription[]
+  shoppingList ShoppingList[]
 
   @@map("users")
 }
 
+model Subscription {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id])
+  planId    String   @map("plan_id")
+  plan      Plan     @relation(fields: [planId], references: [id])
+  startDate DateTime @default(now()) @map("start_date")
+  endDate   DateTime @map("end_date")
+  status    String   @default("inactive")
+
+  @@map("subscriptions")
+}
+
+model Plan {
+  id           String         @id @default(uuid())
+  name         String
+  description  String
+  price        Decimal        @db.Decimal(9, 2)
+  subscription Subscription[]
+
+  @@map("plans")
+}
+
 model List {
-  id          String     @id @default(uuid())
-  name        String
-  description String
-  budget      Decimal    @db.Decimal(9, 2)
-  createdAt   DateTime   @default(now()) @map("created_at")
-  updatedAt   DateTime?  @updatedAt @map("updated_at")
-  authorId    String     @map("author_id")
-  author      User       @relation(fields: [authorId], references: [id])
-  itemList    ItemList[]
+  id                      String        @id @default(uuid())
+  name                    String
+  description             String
+  budget                  Decimal       @db.Decimal(9, 2)
+  dateInitialPurchased    DateTime?     @map("date_initial_purchased")
+  dateCompletionPurchased DateTime?     @map("date_completion_purchased")
+  totalSpent              Decimal       @map("total_spent") @db.Decimal(9, 2)
+  createdAt               DateTime      @default(now()) @map("created_at")
+  updatedAt               DateTime?     @updatedAt @map("updated_at")
+  userId                  String        @map("user_id")
+  user                    User          @relation(fields: [userId], references: [id])
+  productList             ProductList[]
+  shoppingListId          String?       @map("shooping_list_id")
+  shoppingList            ShoppingList? @relation(fields: [shoppingListId], references: [id])
 
   @@map("lists")
 }
 
-model Item {
-  id              String          @id @default(uuid())
-  name            String
-  description     String
-  image           String
-  quantity        String
-  quantityMeasure String          @map("quantity_measure")
-  price           Decimal         @db.Decimal(9, 2)
-  barcode         String
-  createdAt       DateTime        @default(now()) @map("created_at")
-  updatedAt       DateTime?       @updatedAt @map("updated_at")
-  itemPromotions  ItemPromotion[]
-  categoryId      String          @map("category_id")
-  category        Category        @relation(fields: [categoryId], references: [id])
-  itemList        ItemList[]
+model ShoppingList {
+  id        String    @id @default(uuid())
+  month     Int
+  year      Int
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String    @map("user_id")
+  lists     List[]
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
 
-  @@map("itens")
+  @@map("shopping_lists")
 }
 
-model ItemList {
-  id     String @id @default(uuid())
-  item   Item   @relation(fields: [itemId], references: [id])
-  itemId String @map("item_id")
-  list   List   @relation(fields: [listId], references: [id])
-  listId String @map("list_id")
+model Product {
+  id                String             @id @default(uuid())
+  name              String
+  description       String
+  image             String
+  quantity          Int?
+  quantityMeasure   QuantityMeasure?   @map("quantity_measure")
+  price             Decimal?           @db.Decimal(9, 2)
+  barcode           String
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime?          @updatedAt @map("updated_at")
+  productPromotions ProductPromotion[]
+  categoryId        String             @map("category_id")
+  category          Category           @relation(fields: [categoryId], references: [id])
+  productList       ProductList[]
 
-  @@map("itens_lists")
+  @@map("products")
+}
+
+model ProductList {
+  id              String           @id @default(uuid())
+  price           Decimal?         @db.Decimal(9, 2)
+  quantity        Int?
+  quantityMeasure QuantityMeasure? @map("quantity_measure")
+  isPurchased     Boolean          @default(false) @map("is_purchased")
+  product         Product          @relation(fields: [productId], references: [id])
+  productId       String           @map("product_id")
+  list            List             @relation(fields: [listId], references: [id])
+  listId          String           @map("list_id")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime?        @updatedAt @map("updated_at")
+
+  @@map("products_lists")
 }
 
 model Category {
   id        String    @id @default(uuid())
   name      String    @unique
-  itens     Item[]
+  products  Product[]
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
 
@@ -91,31 +147,31 @@ model Store {
   updatedAt  DateTime?   @updatedAt @map("updated_at")
   promotions Promotion[]
 
-  @@map("stories")
+  @@map("stores")
 }
 
 model Promotion {
-  id              String          @id @default(uuid())
-  name            String
-  discount        Decimal         @db.Decimal(9, 2)
-  discountPercent Int             @map("discount_percent")
-  dateInitial     DateTime        @map("date_intial")
-  dateEnd         DateTime        @map("date_end")
-  createdAt       DateTime        @default(now()) @map("created_at")
-  updatedAt       DateTime?       @updatedAt @map("updated_at")
-  itemPromotions  ItemPromotion[]
-  storeId         String          @map("store_id")
-  store           Store           @relation(fields: [storeId], references: [id])
+  id                String             @id @default(uuid())
+  name              String
+  discount          Decimal            @db.Decimal(9, 2)
+  discountPercent   Int                @map("discount_percent")
+  dateInitial       DateTime           @map("date_initial")
+  dateEnd           DateTime           @map("date_end")
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime?          @updatedAt @map("updated_at")
+  productPromotions ProductPromotion[]
+  storeId           String             @map("store_id")
+  store             Store              @relation(fields: [storeId], references: [id])
 
   @@map("promotions")
 }
 
-model ItemPromotion {
+model ProductPromotion {
   id          String    @id @default(uuid())
-  itemId      String    @map("item_id")
-  item        Item      @relation(fields: [itemId], references: [id])
+  productId   String    @map("product_id")
+  product     Product   @relation(fields: [productId], references: [id])
   promotionId String    @map("promotion_id")
   promotion   Promotion @relation(fields: [promotionId], references: [id])
 
-  @@map("item_promotions")
+  @@map("products_promotions")
 }
