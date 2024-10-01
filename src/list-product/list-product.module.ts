@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common'
 import { PrismaModule } from '@prisma/prisma.module'
-import { ProductModule } from '@/product/product.module'
+import { ProductModule } from '@src/product/product.module'
 import { ListProductService } from './list-product.service'
 import { ListProductRepository } from './repositories/list-product.repository'
 

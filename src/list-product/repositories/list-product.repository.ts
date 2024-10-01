@@ -8,6 +8,7 @@ import { UpdateList } from 'src/list/dto/update-list.dto'
 import { ListEntity } from 'src/list/entities/list.entity'
 import { UpdateProductInList } from '../dto/update-product-in-list.dto'
 import { skip } from 'node:test'
+import { QuantityMeasure } from '@utils/enum'
 
 const LINE_AFFECTED = 1
 
@@ -28,6 +29,7 @@ export class ListProductRepository {
     productId: string,
     listId: string,
   ): Promise<ListProductEntity> {
+    console.log('=====> CREATE PRODUCT', listId, productId)
     const productList = await this.prisma.productList.create({
       data: {
         productId,
@@ -35,11 +37,11 @@ export class ListProductRepository {
       },
     })
 
-    if (productList) {
+    if (!productList) {
       throw new BadRequestException('Error creating product in list')
     }
 
-    return productList
+    return productList as ListProductEntity
   }
 
   async verifyProductInList(productId: string, listId: string): Promise<any> {
@@ -82,12 +84,12 @@ export class ListProductRepository {
     console.log('productId produ', productId)
     console.log('listId produ', listId)
 
-    const teste = updatedProductList.find((p) => p.productId === productId)
+    const teste = updatedProductList.find((p) => p.id === productId)
     console.log('testeeeeee', teste)
     const productListtttt = await this.prisma.productList.findFirst({
       where: {
         listId,
-        productId,
+        id: productId,
       },
       include: {
         product: true, // Inclui o objeto Product associado
@@ -97,9 +99,9 @@ export class ListProductRepository {
     const updatedProduct = await this.prisma.productList.update({
       where: { id: productListtttt?.id },
       data: {
-        price: teste.product.price,
-        quantity: teste.product.quantity,
-        quantityMeasure: teste.product.quantityMeasure,
+        price: teste.price,
+        quantity: teste.quantity,
+        quantityMeasure: teste.quantityMeasure,
       },
       include: {
         product: true,

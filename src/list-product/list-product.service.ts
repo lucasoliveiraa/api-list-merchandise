@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common'
 import { InsertList } from 'src/list/dto/insert-list.dto'
 import { ListProductEntity } from './entities/list-product.entity'
 import { ProductService } from 'src/product/product.service'
@@ -52,6 +56,10 @@ export class ListProductService {
       list.id,
     ).catch(() => undefined)
 
+    if (listProduct) {
+      throw new BadRequestException('Product exists in list.')
+    }
+
     if (!listProduct) {
       return this.createProductInList(productId, list.id)
     }
@@ -73,9 +81,10 @@ export class ListProductService {
     list: ListEntity,
   ): Promise<ListEntity> {
     // console.log('updateProductInList', listId, productId, updateList, list)
+    console.log('====> updatedProductList  list', list)
     const updatedProductList = (list.productList || []).map((product) => {
       // console.log('PRODUCT', product)
-      if (product.productId === productId) {
+      if (product.id === productId) {
         return {
           ...product,
           product: {
@@ -128,5 +137,35 @@ export class ListProductService {
     // }
 
     // return listProduct
+  }
+
+  async updateProductInProductList(
+    listId: string,
+    productId: string,
+    updateList: UpdateList,
+    list: ListEntity,
+  ): Promise<ListEntity> {
+    // console.log('updateProductInList', listId, productId, updateList, list)
+    console.log('====> updatedProductList  list', list)
+    const updatedProductList = (list.productList || []).map((product) => {
+      // console.log('PRODUCT', product)
+      if (product.id === productId) {
+        return {
+          ...product,
+          price: updateList.price,
+          quantity: updateList.quantity,
+          quantityMeasure: updateList.quantityMeasure,
+        }
+      }
+      // console.log('updateProductInList PRODUC', product)
+      return product
+    })
+    // console.log(updatedProductList, 'updatedProductList')
+    return this.listProductRepository.updateProductInList(
+      productId,
+      listId,
+      updatedProductList,
+      true,
+    )
   }
 }
