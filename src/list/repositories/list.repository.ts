@@ -89,30 +89,17 @@ export class ListRepository {
     month: number,
     year: number,
   ): Promise<any> {
-    // return await this.prisma.shoppingList.findMany({
-    //   where: {
-    //     userId: userId,
-    //     month: month,
-    //     year: year,
-    //   },
-    //   include: {
-    //     lists: true, // Inclui as listas associadas a este shopping list
-    //   },
-    // });
-    // const startDate = new Date(year, month - 1, 1)
-    // const endDate = new Date(year, month, 0)
-
     console.log('====> STAR', month, year)
 
-    return this.prisma.shoppingList.findMany({
+    return this.prisma.shoppingList.findFirst({
       where: {
         userId,
         month,
         year,
       },
-      include: {
-        lists: true, // Inclui as listas associadas a este shopping list
-      },
+      // include: {
+      //   lists: true, // Inclui as listas associadas a este shopping list
+      // },
     })
   }
 
@@ -136,11 +123,12 @@ export class ListRepository {
   }
 
   async updatePurchasedInList(listId: string, shoppingList: any): Promise<any> {
+    console.log('AQUI ===== AT')
     await this.prisma.list.update({
       where: { id: listId },
       data: {
-        dateInitialPurchased: new Date(),
         shoppingListId: shoppingList.id,
+        dateInitialPurchased: new Date(),
       },
     })
   }

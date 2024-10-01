@@ -12,7 +12,6 @@ export class ReturnList {
   totalSpent: Decimal
   productList?: ReturnListProduct[]
   shoppingListId: string | null
-  // userId: string
 
   constructor(list: ListEntity) {
     this.id = list.id

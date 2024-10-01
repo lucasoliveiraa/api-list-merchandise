@@ -76,7 +76,14 @@ export class ListService {
   ): Promise<ListEntity> {
     const list = await this.findListById(listId, true)
 
-    await this.listProductService.updateProductInList(
+    // await this.listProductService.updateProductInList(
+    //   listId,
+    //   productId,
+    //   updateList,
+    //   list,
+    // )
+
+    await this.listProductService.updateProductInProductList(
       listId,
       productId,
       updateList,
@@ -96,6 +103,7 @@ export class ListService {
     const { userId } = list
     const now = new Date()
     const month = now.getMonth() + 1 // JavaScript months are 0-based
+    // const month = 7 // JavaScript months are 0-based
     const year = now.getFullYear()
 
     console.log('====> Starting purchase', month, year)
@@ -108,7 +116,7 @@ export class ListService {
 
     console.log('====> Starting purchase shoppingList', shoppingList)
 
-    if (shoppingList.length === 0) {
+    if (!shoppingList) {
       console.log('IF')
       shoppingList = await this.listRepository.createShoppingList(
         userId,
@@ -118,12 +126,12 @@ export class ListService {
     }
 
     await this.listRepository.updatePurchasedInList(listId, shoppingList)
-    // await this.prisma.list.update({
-    //   where: { id: listId },
-    //   data: {
-    //     dateInitialPurchased: new Date(),
-    //     shoppingListId: shoppingList.id,
-    //   },
-    // })
   }
+  // await this.prisma.list.update({
+  //   where: { id: listId },
+  //   data: {
+  //     dateInitialPurchased: new Date(),
+  //     shoppingListId: shoppingList.id,
+  //   },
+  // })
 }
