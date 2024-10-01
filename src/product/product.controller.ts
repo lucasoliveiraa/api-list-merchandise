@@ -5,10 +5,11 @@ import { ProductEntity } from './entities/product.entity'
 import { CreateProductDto } from './dto/createProduct.dto'
 import { ReturnProduct } from './dto/return-product.dto'
 import { UpdateProduct } from './dto/update-product.dto'
-import { ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { UserType } from '@utils/enum'
 
 @ApiTags('Product')
+@ApiBearerAuth('access-token')
 @Roles(UserType.Admin, UserType.Root, UserType.User)
 @Controller('product')
 export class ProductController {
