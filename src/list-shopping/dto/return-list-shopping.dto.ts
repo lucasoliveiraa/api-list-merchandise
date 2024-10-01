@@ -1,32 +1,28 @@
 import { ReturnList } from 'src/list/dto/return-list.dto'
-import { ReturnProduct } from '../../product/dto/return-product.dto'
-import { Decimal } from '@prisma/client/runtime/library'
-import { QuantityMeasure } from '@utils/enum'
-import { ListProductEntity } from '@/list-product/entities/list-product.entity'
+import { ListShoppingEntity } from '../entities/list-shopping.entity'
 
 export class ReturnListShopping {
   id: string
-  price: Decimal | null
-  quantity: number | null
-  quantityMeasure: QuantityMeasure | null
-  isPurchased: boolean
-  listId: string
-  productId: string
-  product?: ReturnProduct
-  list?: ReturnList
+  month: number
+  year: number
+  userId: string
+  lists?: ReturnList[]
+  // price: Decimal | null
+  // quantity: number | null
+  // quantityMeasure: QuantityMeasure | null
+  // isPurchased: boolean
+  // listId: string
+  // productId: string
+  // product?: ReturnProduct
+  // list?: ReturnList
 
-  constructor(listProduct: ListProductEntity) {
-    this.id = listProduct.id
-    this.productId = listProduct.productId
-    this.price = listProduct.price
-      ? new Decimal(listProduct.price)
-      : listProduct.price
-    this.quantity = listProduct.quantity
-    this.quantityMeasure = listProduct.quantityMeasure
-    this.isPurchased = listProduct.isPurchased
-    this.product = listProduct.product
-      ? new ReturnProduct(listProduct.product)
+  constructor(listShopping: ListShoppingEntity) {
+    this.id = listShopping.id
+    this.month = listShopping.month
+    this.year = listShopping.year
+    this.userId = listShopping.userId
+    this.lists = listShopping.lists
+      ? listShopping.lists.map((lista) => new ReturnList(lista))
       : undefined
-    this.list = listProduct.list ? new ReturnList(listProduct.list) : undefined
   }
 }
