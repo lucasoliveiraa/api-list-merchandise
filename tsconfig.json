@@ -16,7 +16,7 @@
       "@guards/*": ["src/guards/*"],
       "@utils/*": ["src/utils/*"],
       "@prisma/*": ["src/prisma/*"],
-      "@/*": ["src/*"]
+      "@src/*": ["src/*"]
     },
     "incremental": true,
     "skipLibCheck": true,
