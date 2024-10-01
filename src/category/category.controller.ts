@@ -5,10 +5,11 @@ import { CreateCategory } from './dto/create-category.dto'
 import { CategoryEntity } from './entities/category.entity'
 import { ReturnCategory } from './dto/return-category.dto'
 import { UpdateCategory } from './dto/update-category.dto'
-import { ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { UserType } from '@utils/enum'
 
 @ApiTags('Category')
+@ApiBearerAuth('access-token')
 @Controller('category')
 @Roles(UserType.Admin, UserType.Root)
 export class CategoryController {
